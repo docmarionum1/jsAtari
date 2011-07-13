@@ -103,27 +103,30 @@ cpu =
 
 			for (var i = 0; i < cpu.cc*3; i++)
 			{
-				//if (cpu.paused)
-				//	break;
-				//tia.drawPixel();
-				//tia.updatePos();
-				//tia.drawPixel();
 				tia.step();
+				if (i%3 == 0)
+					pia.step();
 			}
 			
 			cpu.counter += cpu.cc;
 
 			tia.sync();
+			pia.sync();
 		}
 		else
 		{
 			while (cpu.paused)
 			{
+				cpu.counter++;
 				//tia.drawPixel();
 				//tia.updatePos();
 				//tia.drawPixel();
+				//tia.step();
+				//tia.step();
 				tia.step();
-				cpu.counter++;
+				if (cpu.counter%3 == 0)
+					pia.step();
+				
 			}
 		}
 	},
@@ -392,8 +395,9 @@ cpu =
 		/*Test Bits In Memory Against Accumulator*/
 		BIT: function(v)
 		{
-			cpu.f.Z_w((cpu.r.a&v == 0)); //Zero
-				
+			//debug("BITTING " + cpu.r.a + " & " + v);
+			cpu.f.Z_w(!(cpu.r.a&v)); //Zero
+			//debug(cpu.f.Z_r());
 			cpu.f.N_w(util.D7_r(v)); //Set N to be the same as bit 7 of v
 			cpu.f.V_w(util.D6_r(v)); //Set V to be the same as bit 6 of v	
 		},

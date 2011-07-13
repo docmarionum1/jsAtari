@@ -30,9 +30,14 @@ mmu =
 	/*views for each segment of memory*/
 	ram: null,
 	rom: null,
+	
 	tia: null,
 	tia_write: null,
 	tia_read: null,
+	
+	pia: null,
+	pia_write: null,
+	pia_read: null,
 	
 	/*Memory Locations and Sizes*/
 	ram_start: 0x80, //128 bytes, located from 0x80 to 0xFF.  Stack starts at 0xFF, down
@@ -54,6 +59,16 @@ mmu =
 	tia_read_size:  0xe,
 	tia_read_end:   0x3d,
 	
+	pia_size: 0x18,
+	
+	pia_read_start: 0x280,
+	pia_read_size: 0x5,
+	pia_read_end: 0x284,
+	
+	pia_write_start: 0x294,
+	pia_write_size: 0x4,
+	pia_write_end: 0x297,
+	
 	/*Read/Write*/
 	r: function(a) 
 	{	
@@ -66,6 +81,10 @@ mmu =
 		}
 		else if (a >= mmu.ram_start && a <= mmu.ram_end)
 			return mmu.ram[a-mmu.ram_start];
+		else if (a >= mmu.pia_read_start && a <= mmu.pia_read_end)
+		{
+			return mmu.pia_read[a - mmu.pia_read_start];
+		}
 		else if (a >= mmu.rom_start && a <= mmu.rom_end)
 			return mmu.rom[a-mmu.rom_start];
 		else if (mmu.debug)
@@ -97,6 +116,11 @@ mmu =
 		}
 		else if (a >= mmu.ram_start && a <= mmu.ram_end)
 			mmu.ram[a-mmu.ram_start] = v;
+		else if (a >= mmu.pia_write_start && a <= mmu.pia_write_end)
+		{
+			pia.write = a - mmu.pia_read_start;
+			mmu.pia_write[a - mmu.pia_write_start] = v&255;
+		}
 		else if (mmu.debug)
 			debug("Trying to write to memory address " + a + " - Denied");
 	},
@@ -143,10 +167,14 @@ mmu =
 	{
 		mmu.ram = new Uint8Array(mmu.memory, mmu.ram_start, mmu.ram_size);
 		mmu.rom = new Uint8Array(mmu.memory, mmu.rom_start, mmu.rom_size);
-		//mmu.rom = new Uint8Array(mmu.memory, 0xf000, 0xfff);
+		
 		mmu.tia = new Uint8Array(mmu.memory, mmu.tia_write_start, mmu.tia_read_end);
 		mmu.tia_write = new Uint8Array(mmu.memory, mmu.tia_write_start, mmu.tia_write_size);
 		mmu.tia_read = new Uint8Array(mmu.memory, mmu.tia_read_start, mmu.tia_read_size);
+		
+		mmu.pia = new Uint8Array(mmu.memory, mmu.pia_read_start, mmu.pia_size);
+		mmu.pia_write = new Uint8Array(mmu.memory, mmu.pia_write_start, mmu.pia_write_size);
+		mmu.pia_read = new Uint8Array(mmu.memory, mmu.pia_read_start, mmu.pia_read_size);
 		
 		mmu.loadRom(file);
 		
