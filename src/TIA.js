@@ -38,49 +38,81 @@ function player(missle) //The corresponding missle
 	this.missle = missle;
 	
 	this.inc_table = 
-	{
-		0: {156:true},
-		1: {12:true, 156:true},
-		2: {28:true, 156:true},
-		3: {12:true, 28:true, 156:true},
-		4: {60:true, 156:true},
-		5: {156:true},
-		6: {28:true, 60:true, 156:true},
-		7: {156:true}
-	};
+	[
+		{156:true},
+		{12:true, 156:true},
+		{28:true, 156:true},
+		{12:true, 28:true, 156:true},
+		{60:true, 156:true},
+		{156:true},
+		{28:true, 60:true, 156:true},
+		{156:true}
+	];
 	
 	this.inc = function(nusizx) //Takes bits D0-D2 from NUSIZX as a parameter and the number of pixels to increment by
 	{	
-		/*if (this.counter == 12 && nusizx in {1:1, 3:1}) //For 2 or 3 copies, close
-		{
-			this.start_counter = this.START;
-			this.missle.wrap_around_latch = false;
-		}
+		// if (this.counter == 12 && nusizx in {1:1, 3:1}) //For 2 or 3 copies, close
+		// {
+			// this.start_counter = this.START;
+			// this.missle.wrap_around_latch = false;
+		// }
 			
-		else if (this.counter == 28 && nusizx in {2:1, 3:1, 6:1}) //For 2 copies med, 3 copies close or 3 copies med
-			this.start_counter = this.START;
+		// else if (this.counter == 28 && nusizx in {2:1, 3:1, 6:1}) //For 2 copies med, 3 copies close or 3 copies med
+			// this.start_counter = this.START;
 			
-		else if (this.counter == 60&& nusizx in {4:1, 6:1}) //For 2 copies wide, or 3 copies med
-			this.start_counter = this.START;
+		// else if (this.counter == 60&& nusizx in {4:1, 6:1}) //For 2 copies wide, or 3 copies med
+			// this.start_counter = this.START;
 			
-		else if (this.counter == 156) //START is always triggered at the end of the counter
-		{		
+		// else if (this.counter == 156) //START is always triggered at the end of the counter
+		// {		
 			//debug("START");
-			this.start_counter = this.START;
-		}*/
-		
-		if (this.inc_table[nusizx][this.counter])
-		{
-			this.start_counter = this.START;
-			this.missle.wrap_around_latch = false;
-		}
+			// this.start_counter = this.START;
+		// }
 		
 		if (++this.counter >= this.MAX)
 		{
 			this.counter = 0;
 			this.missle.wrap_around_latch = true;
 		}
-	
+		
+		// else if (this.counter == 156 || (this.counter == 12 && nusizx in {1:1, 3:1}) || (this.counter == 28 && nusizx in {2:1, 3:1, 6:1}) || (this.counter == 60 && nusizx in {4:1, 6:1}))
+		// {
+			// this.start_counter = this.START;
+			// this.missle.wrap_around_latch = false;
+		// }
+		
+		else if (this.counter == 156 || (this.counter == 12 && (nusizx == 1 || nusizx == 3)) || (this.counter == 28 && (nusizx == 2 || nusizx == 3 || nusizx == 6)) || (this.counter == 60 && (nusizx == 4 || nusizx == 6)))
+		{
+			this.start_counter = this.START;
+			this.missle.wrap_around_latch = false;
+		}
+		
+		// switch(this.counter)
+		// {
+			// case 156:
+				// this.start_counter = this.START; break;
+			// case 12:
+				// if (nusizx in {1:1, 3:1})
+				// {
+					// this.start_counter = this.START;
+					// this.missle.wrap_around_latch = false;
+				// }
+				// break;
+			// case 28:
+				// if (nusizx in {2:1, 3:1, 6:1})
+					// this.start_counter = this.START;
+				// break;
+			// case 60:
+				// if (nusizx in {4:1, 6:1})
+					// this.start_counter = this.START;
+				// break;
+		//}
+		
+		// else if (this.counter in this.inc_table[nusizx])
+		// {
+			// this.start_counter = this.START;
+			// this.missle.wrap_around_latch = false;
+		// }
 	};
 	
 	this.inc_graphics = function()
@@ -140,26 +172,34 @@ function missle(resmpxA) //The address of it's RESMPx register
 	
 	this.inc = function(nusizx) //Takes bits D0-D2 from NUSIZX as a parameter to determine number of missles
 	{
-		if (this.counter == 12 && nusizx in {1:1, 3:1}) //For 2 or 3 copies, close
+		// if (this.counter == 12 && nusizx in {1:1, 3:1}) //For 2 or 3 copies, close
+		// {
+			// this.start_counter = this.START;
+		// }
+			
+		// else if (this.counter == 28 && nusizx in {2:1, 3:1, 6:1}) //For 2 copies med, 3 copies close or 3 copies med
+			// this.start_counter = this.START;
+			
+		// else if (this.counter == 60&& nusizx in {4:1, 6:1}) //For 2 copies wide, or 3 copies med
+			// this.start_counter = this.START;
+		
+		// else if (this.counter == 156) //START is always triggered at the end of the counter
+		// {		
+			// this.start_coutner = this.START;
+		// }
+		
+		// if (++this.counter >= this.MAX)
+			// this.counter = 0; 
+			
+		if (++this.counter >= this.MAX)
+		{
+			this.counter = 0;
+		}
+		
+		else if (this.counter == 156 || (this.counter == 12 && (nusizx == 1 || nusizx == 3)) || (this.counter == 28 && (nusizx == 2 || nusizx == 3 || nusizx == 6)) || (this.counter == 60 && (nusizx == 4 || nusizx == 6)))
 		{
 			this.start_counter = this.START;
 		}
-			
-		else if (this.counter == 28 && nusizx in {2:1, 3:1, 6:1}) //For 2 copies med, 3 copies close or 3 copies med
-			this.start_counter = this.START;
-			
-		else if (this.counter == 60&& nusizx in {4:1, 6:1}) //For 2 copies wide, or 3 copies med
-			this.start_counter = this.START;
-		
-		else if (this.counter == 156) //START is always triggered at the end of the counter
-		{		
-			//debug("START");
-			//this.graphics_scan_counter = Math.pow(2, nusizx) + 4;
-			this.start_coutner = this.START;
-		}
-		
-		if (++this.counter >= this.MAX)
-			this.counter = 0; 
 	};
 	
 	this.inc_graphics = function()
@@ -363,9 +403,12 @@ tia =
 		INPT5	: 0x3D
 	},
 	
+	
+	
 	/*A copy of the ram in the MMU for accessing the TIA's registers*/
 	memory: new ArrayBuffer(0x3E),
 	ram: null, //View
+	ram_changed: false,
 	
 	/*DOM elements*/
 	//Canvas and Context
@@ -434,7 +477,7 @@ tia =
 		RSYCN: function() {},
 		
 		//Clear collision registers
-		CXCLR: function() { mmu.tia[tia.reg.CXM1P] = mmu.tia[tia.reg.CXM1P] = mmu.tia[tia.reg.CXP0FB] = mmu.tia[tia.reg.CXP1FB] = mmu.tia[tia.reg.CXM0FB] = mmu.tia[tia.reg.CXM01FB] = mmu.tia[tia.reg.CXBLPF] = mmu.tia[tia.reg.CXPPMM] = 0;},
+		CXCLR: function() { tia.ram[tia.reg.CXM1P] = tia.ram[tia.reg.CXM1P] = tia.ram[tia.reg.CXP0FB] = tia.ram[tia.reg.CXP1FB] = tia.ram[tia.reg.CXM0FB] = tia.ram[tia.reg.CXM01FB] = tia.ram[tia.reg.CXBLPF] = tia.ram[tia.reg.CXPPMM] = 0;},
 		
 		//HMCLR: function() { mmu.tia[tia.reg.HMP0] = mmu.tia[tia.reg.HMP1] = mmu.tia[tia.reg.HMM0] = mmu.tia[tia.reg.HMM1] = mmu.tia[tia.reg.HMBL] = 0; }, //Clear Horizontal motion registers
 		HMCLR: function() { tia.ram[tia.reg.HMP0] = tia.ram[tia.reg.HMP1] = tia.ram[tia.reg.HMM0] = tia.ram[tia.reg.HMM1] = tia.ram[tia.reg.HMBL] = 0; },
@@ -452,7 +495,7 @@ tia =
 			tia.hmove_counter = 15;
 			tia.p0.hmove_latch = true;
 			tia.p1.hmove_latch = true;
-		},
+		}
 	},
 	
 	/*Handle everything that happens at the beginning of a new line*/
@@ -576,8 +619,18 @@ tia =
 					tia.m1.inc();
 			}
 			
+			/*Playing Field*/
+			if ((tia.pos.x >= (tia.dim.HBLANK - 4)) && (tia.pos.x%4 == 0)) //every 4 clocks and if the position is at least 4 clocks before starting the picture
+			{
+				tia.pf_current = tia.pf_buffer;
+				tia.pf_buffer = tia.pfBuffer();
+			}
+			
 			if((tia.pos.x >= tia.dim.HBLANK)) //Every visible clock - incremement counters, decremement start_counters and incremement graphics counters
 			{
+				var set_array = [0,0,0,0,0,0];
+				var num_set = 0;
+				
 				/*******PLAYERS*******/
 			
 				/*Increment the players' main counter*/
@@ -585,40 +638,82 @@ tia =
 				tia.p1.inc(tia.ram[tia.reg.NUSIZ1]&7);
 				
 				/*Decrement the players' start counters*/
-				tia.p0.dec_start();
-				tia.p1.dec_start();
+				if (tia.p0.start_counter >= 0)
+					tia.p0.dec_start();
+				if (tia.p1.start_counter >= 0)
+					tia.p1.dec_start();
 				
 				
 				/*Incremement graphics counters*/
 				
 				/*Player 0*/
-				if ((tia.ram[tia.reg.NUSIZ0]&7) == 5) //For double sized players, every 2 clocks
+				if (tia.p0.graphics_scan_counter <= 8)
 				{
-					if (tia.pos.x%2 == 0)
-						tia.p0.inc_graphics();
-				}
-				else if ((tia.ram[tia.reg.NUSIZ0]&7) == 7) //For quad sized players, every 4 clocks
-				{
-					if (tia.pos.x%4 == 0)
-						tia.p0.inc_graphics();
-				}
-				else
-					tia.p0.inc_graphics(); //For regular players
+					if ((tia.ram[tia.reg.NUSIZ0]&7) == 5) //For double sized players, every 2 clocks
+					{
+						if (tia.pos.x%2 == 0)
+						{
+							tia.p0.inc_graphics();
+							// if (tia.p0.start_counter <= 0)
+							// {
+								// if (++tia.p0.graphics_scan_counter == 4)
+									// tia.p0.missle.resetP();
+							// }
+						}
+					}
+					else if ((tia.ram[tia.reg.NUSIZ0]&7) == 7) //For quad sized players, every 4 clocks
+					{
+						if (tia.pos.x%4 == 0)
+						{
+							tia.p0.inc_graphics();
+							// if (tia.p0.start_counter <= 0)
+							// {
+								// if (++tia.p0.graphics_scan_counter == 4)
+									// tia.p0.missle.resetP();
+							// }
+						}
+					}
+					else
+					{
+						tia.p0.inc_graphics(); //For regular players
+						// if (tia.p0.start_counter <= 0)
+						// {
+							// if (++tia.p0.graphics_scan_counter == 4)
+								// tia.p0.missle.resetP();
+						// }
+					}
 					
-				/*Player 1*/	
-				if ((tia.ram[tia.reg.NUSIZ1]&7) == 5) //For double sized players, every 2 clocks
-				{
-					if (tia.pos.x%2 == 0)
-						tia.p1.inc_graphics();
+					if (tia.ram[tia.reg.GRP0] && tia.p0.pixel(tia.ram[tia.reg.GRP0], tia.ram[tia.reg.REFP0]&8, tia.ram[tia.reg.VDELP0]&1))
+					{
+						//color = tia.getColor(tia.reg.COLUP0);
+						//set_array[0] = tia.getColor(tia.reg.COLUP0);
+						set_array[0] = true;
+						num_set++;
+					}
 				}
-				else if ((tia.ram[tia.reg.NUSIZ1]&7) == 7) //For quad sized players, every 4 clocks
-				{
-					if (tia.pos.x%4 == 0)
-						tia.p1.inc_graphics();
-				}
-				else
-					tia.p1.inc_graphics();
 					
+				/*Player 1*/
+				if (tia.p1.graphics_scan_counter <= 8)
+				{				
+					if ((tia.ram[tia.reg.NUSIZ1]&7) == 5) //For double sized players, every 2 clocks
+					{
+						if (tia.pos.x%2 == 0)
+							tia.p1.inc_graphics();
+					}
+					else if ((tia.ram[tia.reg.NUSIZ1]&7) == 7) //For quad sized players, every 4 clocks
+					{
+						if (tia.pos.x%4 == 0)
+							tia.p1.inc_graphics();
+					}
+					else
+						tia.p1.inc_graphics();
+						
+					if (tia.ram[tia.reg.GRP1] && tia.p1.pixel(tia.ram[tia.reg.GRP1], tia.ram[tia.reg.REFP1]&8, tia.ram[tia.reg.VDELP0]&1))
+					{	
+						set_array[2] = true;
+						num_set++;
+					}
+				}	
 					
 					
 				/*******MISSLES*******/
@@ -628,53 +723,73 @@ tia =
 				tia.m1.inc(tia.ram[tia.reg.NUSIZ1]&7);
 				
 				/*Decrement the missles' start counters*/
-				tia.m0.dec_start();
-				tia.m1.dec_start();
+				if (tia.m0.start_counter > 0)
+					tia.m0.dec_start();
+				if (tia.m1.start_counter > 0)
+					tia.m1.dec_start();
 				
 				
 				/*Incremement graphics counters*/
 				
 				/*Missle 0*/
-				if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 0) //For regular missles, 1px
+				if (tia.m0.graphics_scan_counter <= 1)
 				{
-					tia.m0.inc_graphics();
-				}
-				if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 1) //For double sized missles, every 2 clocks
-				{
-					if (tia.pos.x%2 == 0)
+					if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 0) //For regular missles, 1px
+					{
 						tia.m0.inc_graphics();
-				}
-				else if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 2) //For quad sized missles, every 4 clocks
-				{
-					if (tia.pos.x%4 == 0)
-						tia.m0.inc_graphics();
-				}
-				else  //For ccto sized missles, every 8 clocks
-				{
-					if (tia.pos.x%8 == 0)
-						tia.m0.inc_graphics();
+					}
+					if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 1) //For double sized missles, every 2 clocks
+					{
+						if (tia.pos.x%2 == 0)
+							tia.m0.inc_graphics();
+					}
+					else if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 2) //For quad sized missles, every 4 clocks
+					{
+						if (tia.pos.x%4 == 0)
+							tia.m0.inc_graphics();
+					}
+					else  //For ccto sized missles, every 8 clocks
+					{
+						if (tia.pos.x%8 == 0)
+							tia.m0.inc_graphics();
+					}
+					
+					if (tia.m0.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM0]&2)
+					{
+						set_array[1] = true;
+						num_set++;
+					}
 				}
 					
 					
 				/*Missle 1*/
-				if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 0) //For regular missles, 1px
+				if (tia.m1.graphics_scan_counter <= 1)
 				{
-					tia.m1.inc_graphics();
-				}
-				if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 1) //For double sized missles, every 2 clocks
-				{
-					if (tia.pos.x%2 == 0)
+					if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 0) //For regular missles, 1px
+					{
 						tia.m1.inc_graphics();
-				}
-				else if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 2) //For quad sized missles, every 4 clocks
-				{
-					if (tia.pos.x%4 == 0)
-						tia.m1.inc_graphics();
-				}
-				else //For ccto sized missles, every 8 clocks
-				{
-					if (tia.pos.x%8 == 0)
-						tia.m1.inc_graphics();
+					}
+					if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 1) //For double sized missles, every 2 clocks
+					{
+						if (tia.pos.x%2 == 0)
+							tia.m1.inc_graphics();
+					}
+					else if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 2) //For quad sized missles, every 4 clocks
+					{
+						if (tia.pos.x%4 == 0)
+							tia.m1.inc_graphics();
+					}
+					else //For ccto sized missles, every 8 clocks
+					{
+						if (tia.pos.x%8 == 0)
+							tia.m1.inc_graphics();
+					}
+					
+					if (tia.m1.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM1]&2)
+					{
+						set_array[3] = true;
+						num_set++;
+					}
 				}
 					
 				
@@ -685,37 +800,110 @@ tia =
 				tia.bl.inc();
 				
 				/*Decrement the ball's start counter*/
-				tia.bl.dec_start();
+				if (tia.bl.start_counter > 0)
+					tia.bl.dec_start();
 				
 				
 				/*Incremement graphics counter*/
-				if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 0) //For regular sized ball, every clock
+				if (tia.bl.graphics_scan_counter <= 1)
 				{
-						tia.bl.inc_graphics();
+					if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 0) //For regular sized ball, every clock
+					{
+							tia.bl.inc_graphics();
+					}
+					else if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 1) //For double sized ball, every 2 clocks
+					{
+						if (tia.pos.x%2 == 0)
+							tia.bl.inc_graphics();
+					}
+					else if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 2) //For quad sized ball, every 4 clocks
+					{
+						if (tia.pos.x%4 == 0)
+							tia.bl.inc_graphics();
+					}
+					else   //For octo sized ball, every 8 clocks
+					{
+						if (tia.pos.x%8 == 0)
+							tia.bl.inc_graphics();
+					}
+					
+					if (tia.bl.graphics_scan_counter == 0 && tia.bl.pixel(tia.ram[tia.reg.ENABL]&2, tia.ram[tia.reg.VDELBL]&1))
+					{
+						set_array[4] = true;
+						num_set++;
+					}
 				}
-				else if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 1) //For double sized ball, every 2 clocks
+				
+				
+				if (tia.pos.y >= tia.dim.TOP && tia.pos.y < tia.dim.BOTTOM-1) //If the position is on the visible screen
 				{
-					if (tia.pos.x%2 == 0)
-						tia.bl.inc_graphics();
+					var color = null;
+					
+					if (tia.ram[tia.reg.VBLANK]&2) //If VBLANK is set
+						color = [0x00,0x00,0x00];
+					else
+					{
+						/*Then check the Playingfield*/
+						if (tia.pf_current)
+						{
+							set_array[5] = true;
+							num_set++;
+						}
+						
+						
+						if (!(tia.ram[tia.reg.CTRLPF]&2))
+						{
+							if (set_array[0])
+								color = tia.getColor(tia.reg.COLUP0);
+							else if (set_array[1])
+								color = tia.getColor(tia.reg.COLUP0);
+							else if (set_array[2])
+								color = tia.getColor(tia.reg.COLUP1);
+							else if (set_array[3])
+								color = tia.getColor(tia.reg.COLUP1);
+							else if (set_array[4])
+								color = tia.getColor(tia.reg.COLUPF);
+							else if (set_array[5])
+								color = tia.pf_current;
+						}
+						else
+						{
+							if (set_array[5])
+								color = tia.pf_current;
+							else if (set_array[4])
+								color = tia.getColor(tia.reg.COLUPF);
+							else if (set_array[0])
+								color = tia.getColor(tia.reg.COLUP0);
+							else if (set_array[1])
+								color = tia.getColor(tia.reg.COLUP0);
+							else if (set_array[2])
+								color = tia.getColor(tia.reg.COLUP1);
+							else if (set_array[3])
+								color = tia.getColor(tia.reg.COLUP1);
+							
+						}
+						
+						if (num_set >= 2)
+							tia.checkCollisions(set_array);
+						if (color == null)
+							color = tia.getColor(tia.reg.COLUBK);	
+					}
+					
+					if (!tia.debug)
+					{
+						//debug(color);
+						var l = (tia.pos.y - tia.dim.TOP)*tia.canvas.width*4 + (tia.pos.x - tia.dim.HBLANK)*4;
+						tia.screen.data[l++] = color[0];
+						tia.screen.data[l++] = color[1];
+						tia.screen.data[l++] = color[2];
+						tia.screen.data[l] = 255;
+					}
+					else
+					{
+						tia.context.fillStyle = util.colorString(color);
+						tia.context.fillRect((tia.canvas.width/tia.dim.HPICTURE)*(tia.pos.x - tia.dim.HBLANK), (tia.canvas.height/tia.dim.VPICTURE)*(tia.pos.y - tia.dim.TOP), tia.canvas.width/tia.dim.HPICTURE, tia.canvas.height/tia.dim.VPICTURE);
+					}
 				}
-				else if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 2) //For quad sized ball, every 4 clocks
-				{
-					if (tia.pos.x%4 == 0)
-						tia.bl.inc_graphics();
-				}
-				else   //For octo sized ball, every 8 clocks
-				{
-					if (tia.pos.x%8 == 0)
-						tia.bl.inc_graphics();
-				}
-			}
-			
-			
-			/*Playing Field*/
-			if ((tia.pos.x >= (tia.dim.HBLANK - 4)) && (tia.pos.x%4 == 0)) //every 4 clocks and if the position is at least 4 clocks before starting the picture
-			{
-				tia.pf_current = tia.pf_buffer;
-				tia.pf_buffer = tia.pfBuffer();
 			}
 		}
 	},
@@ -777,47 +965,81 @@ tia =
 			return null;
 	},
 	
+	//set_array: [0,0,0,0,0,0],
+	
 	/*Draw the pixel at x,y*/
 	drawPixel: function()
 	{
+		
 		if (tia.pos.x >= tia.dim.HBLANK && tia.pos.x < tia.dim.WIDTH && tia.pos.y >= tia.dim.TOP && tia.pos.y < tia.dim.BOTTOM-1) //If the position is on the visible screen
 		{
 			var color = null;
+			
 			if (tia.ram[tia.reg.VBLANK]&2) //If VBLANK is set
 				color = [0x00,0x00,0x00];
 			else
 			{
+				//var set_array = [0,0,0,0,0,0];
+				var set_array = [0,0,0,0,0,0];
 				/*Check p0 first*/
-				if (tia.ram[tia.reg.GRP0] && tia.p0.graphics_scan_counter >=0 && tia.p0.pixel(tia.ram[tia.reg.GRP0], tia.ram[tia.reg.REFP0]&8, tia.ram[tia.reg.VDELP0]&1))
+				if (tia.ram[tia.reg.GRP0] && tia.p0.graphics_scan_counter >=0 && tia.p0.graphics_scan_counter < 8 && tia.p0.pixel(tia.ram[tia.reg.GRP0], tia.ram[tia.reg.REFP0]&8, tia.ram[tia.reg.VDELP0]&1))
 				{
-					color = tia.getColor(tia.reg.COLUP0);
+					//color = tia.getColor(tia.reg.COLUP0);
+					set_array[0] = tia.getColor(tia.reg.COLUP0);
 				}
 				
 				/*Check m0*/
-				if (color == null && tia.m0.pixel(tia.ram[tia.reg.ENAM0]&2))
-					color = tia.getColor(tia.reg.COLUP0);
+				//if (tia.m0.graphics_scan_counter == 0 && tia.m0.pixel(tia.ram[tia.reg.ENAM0]&2))
+				if (tia.m0.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM0]&2)
+					set_array[1] = tia.getColor(tia.reg.COLUP0);
 					
 				/*Then check p1*/
-				if (color == null && tia.ram[tia.reg.GRP1] && tia.p1.graphics_scan_counter >=0 && tia.p1.pixel(tia.ram[tia.reg.GRP1], tia.ram[tia.reg.REFP1]&8, tia.ram[tia.reg.VDELP0]&1))
-					color = tia.getColor(tia.reg.COLUP1);
+				if (tia.ram[tia.reg.GRP1] && tia.p1.graphics_scan_counter >=0 && tia.p1.graphics_scan_counter < 8 && tia.p1.pixel(tia.ram[tia.reg.GRP1], tia.ram[tia.reg.REFP1]&8, tia.ram[tia.reg.VDELP0]&1))
+					set_array[2] = tia.getColor(tia.reg.COLUP1);
 					
 				/*Check m1*/
-				if (color == null && tia.m1.pixel(tia.ram[tia.reg.ENAM1]&2))
-					color = tia.getColor(tia.reg.COLUP1);
+				//if (tia.m1.pixel(tia.ram[tia.reg.ENAM1]&2))
+				if (tia.m1.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM1]&2)
+					set_array[3] = tia.getColor(tia.reg.COLUP1);
 					
 				
 				/*Check BL*/
-				if (color == null && tia.bl.pixel(tia.ram[tia.reg.ENABL]&2, tia.ram[tia.reg.VDELBL]&1))
-					color = tia.getColor(tia.reg.COLUPF);
+				if (tia.bl.graphics_scan_counter == 0 && tia.bl.pixel(tia.ram[tia.reg.ENABL]&2, tia.ram[tia.reg.VDELBL]&1))
+					set_array[4] = tia.getColor(tia.reg.COLUPF);
 				
 				/*Then check the Playingfield*/
-				if (color == null)
-				{
-					color = tia.pf_current;
-				}
+				set_array[5] = tia.pf_current;
 				
-				if (color == null)
-					color = tia.getColor(tia.reg.COLUBK);		
+				var p_array = tia.priority;
+				if (tia.ram[tia.reg.CTRLPF]&2)
+					p_array = tia.priority_alt;
+				
+				// for (var i = 0; i < set_array.length; i++)
+				// {
+					// if (set_array[p_array[i]])
+					// {
+						// color = set_array[p_array[i]];
+						// break;
+					// }
+				// }
+				
+				if (set_array[p_array[0]])
+					color = set_array[p_array[0]];
+				else if (set_array[p_array[1]])
+					color = set_array[p_array[1]];
+				else if (set_array[p_array[2]])
+					color = set_array[p_array[2]];
+				else if (set_array[p_array[3]])
+					color = set_array[p_array[3]];
+				else if (set_array[p_array[4]])
+					color = set_array[p_array[4]];
+				else if (set_array[p_array[5]])
+					color = set_array[p_array[5]];
+				
+				if (color != null)
+					tia.checkCollisions(set_array);
+				else
+					color = tia.getColor(tia.reg.COLUBK);	
 			}
 			
 			if (!tia.debug)
@@ -847,13 +1069,31 @@ tia =
 			document.getElementById("pf2").innerHTML = tia.ram[tia.reg.PF2].toString(2);
 		}
 	},
+	
+	checkCollisions: function(a)
+	{
+		tia.ram[tia.reg.CXM0P] |= (((a[1]&&a[2])<<7) + ((a[1]&&a[0])<<6)); 
+		tia.ram[tia.reg.CXM1P] |= (((a[3]&&a[0])<<7) + ((a[3]&&a[2])<<6)); 
+		tia.ram[tia.reg.CXP0FB] |= (((a[0]&&a[5])<<7) + ((a[0]&&a[4])<<6)); 
+		tia.ram[tia.reg.CXP1FB] |= (((a[2]&&a[5])<<7) + ((a[2]&&a[4])<<6)); 
+		tia.ram[tia.reg.CXM0FB] |= (((a[1]&&a[5])<<7) + ((a[1]&&a[4])<<6)); 
+		tia.ram[tia.reg.CXM1FB] |= (((a[3]&&a[5])<<7) + ((a[3]&&a[4])<<6)); 
+		tia.ram[tia.reg.CXBLPF] |= ((a[4]&&a[5])<<7); 
+		tia.ram[tia.reg.CXPPMM] |= (((a[0]&&a[2])<<7) + ((a[1]&&a[3])<<6)); 
+		tia.ram_changed = true;
+	},
 
 	
 	step: function()
 	{
 		
-		tia.drawPixel();
+		//tia.drawPixel();
 		tia.updatePos();
+		if (tia.ram_changed)
+		{
+			tia.sync_ram();
+			tia.ram_changed = false;
+		}
 	},
 	
 	sync: function()
@@ -886,6 +1126,18 @@ tia =
 			tia.write = -1;
 		}
 	},
+	
+	sync_ram: function()
+	{
+		for (var i = 0x30; i <= 0x3D; i++)
+		{
+			mmu.tia[i] = tia.ram[i];
+		}
+	},
+	
+	
+	priority: [0, 1, 2, 3, 4, 5], 
+	pirority_alt: [5, 4, 0, 1, 2, 3],
 	
 	color_rgb:
 	[
@@ -1040,7 +1292,7 @@ tia =
 			[0xc8, 0xfc, 0xa4],
 			[0xe0, 0xec, 0x9c],
 			[0xe0, 0xec, 0x9c]
-		],
+		]
 	]
 };
 

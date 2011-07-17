@@ -27,6 +27,7 @@ mmu =
 	//Where the memory is stored
 	memory: new ArrayBuffer(0x10000),
 	
+	
 	/*views for each segment of memory*/
 	ram: null,
 	rom: null,
@@ -71,7 +72,18 @@ mmu =
 	
 	/*Read/Write*/
 	r: function(a) 
-	{	
+	{
+		//debug(a.toString(16));
+		if ((a%0x2000) < 0x1000)
+		{
+			a &= 0xfff;
+			//debug("hi");
+		}
+		else
+			a = 0xf000 + (a&0xfff);
+			
+		//debug(a.toString(16));
+		
 		if (a <= mmu.tia_read_end)
 		{
 			if(a >= mmu.tia_read_start)
@@ -132,7 +144,16 @@ mmu =
 	stackPopWord:  function()  {return (mmu.stackPop() + (mmu.stackPop() << 8));},
 	
 	/*ROM*/
-	readByte: function() {return mmu.rom[cpu.r.pc++ - mmu.rom_start];},
+	readByte: function() 
+	{
+		var a = cpu.r.pc++;
+		if (!(a%0x2000) < 0x1000)
+		{
+			a = 0xf000 + (a&0xfff);
+		}
+			
+		return mmu.rom[a - mmu.rom_start];
+	},
 	readWord: function()
 	{
 		var lowBit = mmu.rom[cpu.r.pc++ - mmu.rom_start];
@@ -175,7 +196,6 @@ mmu =
 		mmu.pia = new Uint8Array(mmu.memory, mmu.pia_read_start, mmu.pia_size);
 		mmu.pia_write = new Uint8Array(mmu.memory, mmu.pia_write_start, mmu.pia_write_size);
 		mmu.pia_read = new Uint8Array(mmu.memory, mmu.pia_read_start, mmu.pia_read_size);
-		
 		mmu.loadRom(file);
 		
 		mmu.debug = debug;

@@ -25,10 +25,16 @@ input =
 {
 	keys:
 	{
+		TRIGGER: 32,
 		LEFT: 37,
 		UP: 38,
 		RIGHT: 39,
 		DOWN: 40,
+		RESET: 48,
+		SELECT: 49,
+		COLOR: 51,
+		P0DIF: 54,
+		P1DIF: 55,
 	},
 
 	onkeydown: function(e)
@@ -39,8 +45,13 @@ input =
 			keycode = window.event.keyCode;
 		else if (e) 
 			keycode = e.which;
-			
-		if (keycode == input.keys.LEFT)
+		
+		if (keycode == input.keys.TRIGGER)
+		{
+			tia.ram[tia.reg.INPT4] = 0;
+			tia.ram_changed = true;
+		}
+		else if (keycode == input.keys.LEFT)
 		{
 			pia.ram[pia.reg.SWCHA] = util.D6_w(pia.ram[pia.reg.SWCHA], 0);
 		}
@@ -67,7 +78,12 @@ input =
 		else if (e) 
 			keycode = e.which;
 			
-		if (keycode == input.keys.LEFT)
+		if (keycode == input.keys.TRIGGER)
+		{
+			tia.ram[tia.reg.INPT4] = 128;
+			tia.ram_changed = true;
+		}
+		else if (keycode == input.keys.LEFT)
 		{
 			pia.ram[pia.reg.SWCHA] = util.D6_w(pia.ram[pia.reg.SWCHA], 1);
 		}
@@ -85,15 +101,33 @@ input =
 		}
 	},
 	
+	onkeypress: function(e)
+	{
+		var keycode;
+		
+		if (window.event) 
+			keycode = window.event.keyCode;
+		else if (e) 
+			keycode = e.which;
+			
+		if (keycode == input.keys.COLOR)
+		{
+			pia.ram[pia.reg.SWCHB] ^= 8;
+			debug(pia.ram[pia.reg.SWCHB].toString(2));
+		}
+	},
+	
 	bind_input: function(element)
 	{
 		element.onkeydown = input.onkeydown;
 		element.onkeyup = input.onkeyup;
+		element.onkeypress = input.onkeypress;
 	},
 	
 	__init__: function(element)
 	{
 		pia.ram[pia.reg.SWCHA] = 0xff;
+		pia.ram[pia.reg.SWCHB] = 11;
 		input.bind_input(element);
 	}
 };

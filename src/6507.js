@@ -81,6 +81,7 @@ cpu =
 			
 			if (cpu.debug)
 			{
+				debug((cpu.r.pc - 1).toString(16));
 				debug((cpu.r.pc - 1).toString(16) + " - " + b.toString(16) + " - " + cpu.map[b]);
 			}
 			
@@ -90,6 +91,8 @@ cpu =
 			}
 			catch(e)
 			{
+				debug((cpu.r.pc - 1).toString(16));
+				debug((cpu.r.pc - 1).toString(16) + " - " + b.toString(16) + " - " + cpu.map[b]);
 				debug(e);
 				cpu.running = false;
 				return;
@@ -145,7 +148,7 @@ cpu =
 		while(cpu.running)
 		{
 			cpu.step();
-			if (cpu.counter > 262*78*3)
+			if (cpu.counter > 262*78*1)
 			//if (cpu.counter > 1000)
 			{
 				//debug("over 1000");
@@ -620,7 +623,7 @@ cpu =
 			else //Else operate on memory address 'a'
 			{
 				var v = mmu.r(a);
-				cpu.f.C_w(cpu.f.D0_r(v));
+				cpu.f.C_w(util.D0_r(v));
 				v = (v >> 1)&255;
 				mmu.w(a, v);
 			}
