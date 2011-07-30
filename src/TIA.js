@@ -171,26 +171,7 @@ function missle(resmpxA) //The address of it's RESMPx register
 	this.resmpx = resmpxA;
 	
 	this.inc = function(nusizx) //Takes bits D0-D2 from NUSIZX as a parameter to determine number of missles
-	{
-		// if (this.counter == 12 && nusizx in {1:1, 3:1}) //For 2 or 3 copies, close
-		// {
-			// this.start_counter = this.START;
-		// }
-			
-		// else if (this.counter == 28 && nusizx in {2:1, 3:1, 6:1}) //For 2 copies med, 3 copies close or 3 copies med
-			// this.start_counter = this.START;
-			
-		// else if (this.counter == 60&& nusizx in {4:1, 6:1}) //For 2 copies wide, or 3 copies med
-			// this.start_counter = this.START;
-		
-		// else if (this.counter == 156) //START is always triggered at the end of the counter
-		// {		
-			// this.start_coutner = this.START;
-		// }
-		
-		// if (++this.counter >= this.MAX)
-			// this.counter = 0; 
-			
+	{		
 		if (++this.counter >= this.MAX)
 		{
 			this.counter = 0;
@@ -231,13 +212,23 @@ function missle(resmpxA) //The address of it's RESMPx register
 	
 	this.reset = function()
 	{
-		if (!(tia.ram[this.resmpx]&2)) //If RESPMx is true, no reset is triggered
+		if (this.resmpx == 0x28)
+			var r = tia.RESMP0_D1;
+		else
+			var r = tia.RESMP1_D1;
+			
+		if (!r) //If RESPMx is true, no reset is triggered
 			this.counter = -3; //Delay of 1 mCount to latch, no START is triggered
 	};
 	
 	this.resetP = function() //Resets the missle when it is locked to the player 
 	{
-		if ((tia.ram[this.resmpx]&2) && this.wrap_around_latch) //If RESMPx is true and it is the first player drawn
+		if (this.resmpx == 0x28)
+			var r = tia.RESMP0_D1;
+		else
+			var r = tia.RESMP1_D1;
+			
+		if (r && this.wrap_around_latch) //If RESMPx is true and it is the first player drawn
 			this.counter = -3;
 	};
 }
@@ -305,6 +296,7 @@ function ball()
 		//debug(this.counter);
 	};
 }
+
 
 
 
@@ -378,7 +370,7 @@ tia =
 		HMM1	: 0x23,
 		HMBL	: 0x24,
 		VDELP0	: 0x25,
-		VDEL01	: 0x26,
+		VDELP1	: 0x26,
 		VDELBL	: 0x27,
 		RESMP0	: 0x28,
 		RESMP1	: 0x29,
@@ -403,18 +395,97 @@ tia =
 		INPT5	: 0x3D
 	},
 	
+	VSYNC	: 0,
+	VBLANK	: 0,
+	NUSIZ0	: 0,
+		NUSIZ0_MIS: 0,
+		NUSIZ0_PSIZE: 0,
+	NUSIZ1	: 0,
+		NUSIZ1_MIS: 0,
+		NUSIZ1_PSIZE: 0,
+	COLUP0	: 0,
+		COLUP0_LUM: 0,
+		COLUP0_COL: 0,
+		colup0_r: null,
+		colup0_g: null,
+		colup0_b: null,
+	COLUP1	: 0,
+		COLUP1_LUM: 0,
+		COLUP1_COL: 0,
+		colup1_r: null,
+		colup1_g: null,
+		colup1_b: null,
+	COLUPF	: 0,
+		COLUPF_LUM: 0,
+		COLUPF_COL: 0,
+		colupf_r: null,
+		colupf_g: null,
+		colupf_b: null,
+	COLUBK	: 0,
+		COLUBK_LUM: 0,
+		COLUBK_COL: 0,
+		colubk_r: null,
+		colubk_g: null,
+		colubk_b: null,
+	CTRLPF	: 0,
+		CTRLPF_D0 : 0,
+		CTRLPF_D1 : 0,
+		CTRLPF_D2 : 0,
+		CTRLPF_BALL : 0,
+	REFP0	: 0,
+		REFP0_D3 : 0,
+	REFP1	: 0,
+		REFP1_D3 : 0,
+	PF0		: 0,
+	PF1		: 0,
+	PF2		: 0,
+	AUDC0	: 0,
+	AUDC1	: 0,
+	AUDF0	: 0,
+	AUDF1	: 0,
+	AUDV0	: 0,
+	AUDV1	: 0,
+	GRP0	: 0,
+	GRP1	: 0,
+	ENAM0	: 0,
+	ENAM1	: 0,
+	ENABL	: 0,
+	HMP0	: 8,
+	HMP1	: 8,
+	HMM0	: 8,
+	HMM1	: 8,
+	HMBL	: 8,
+	VDELP0	: 0,
+	VDELP1	: 0,
+	VDELBL	: 0,
+	RESMP0	: 0,
+		RESMP0_D1: 0,
+	RESMP1	: 0,
+		RESMP1_D1: 0,
 	
 	
-	/*A copy of the ram in the MMU for accessing the TIA's registers*/
-	memory: new ArrayBuffer(0x3E),
-	ram: null, //View
-	ram_changed: false,
+	
+	CXM0P	: 0,
+	CXM1P	: 0,
+	CXP0FB	: 0,
+	CXP1FB	: 0,
+	CXM0FB	: 0,
+	CXM1FB	: 0,
+	CXBLPF	: 0,
+	CXPPMM	: 0,
+	INPT0	: 0,
+	INPT1	: 0,
+	INPT2	: 0,
+	INPT3	: 0,
+	INPT4	: 0,
+	INPT5	: 0,
 	
 	/*DOM elements*/
 	//Canvas and Context
 	canvas: null,
 	context: null,
 	screen: null, //ImageData
+	screen_pointer: 0,
 	
 	/*The position of the electron beam including blanks*/
 	pos: 
@@ -428,6 +499,14 @@ tia =
 	
 	pf_current: null,
 	pf_buffer: null,
+	
+	pf_current_r: null,
+	pf_current_g: null,
+	pf_current_b: null,
+	
+	pf_buffer_r: null,
+	pf_buffer_g: null,
+	pf_buffer_b: null,
 	  
 	write: -1, //The register, if any, that was written to in the last operation
 	
@@ -447,11 +526,11 @@ tia =
 		tia.context = tia.canvas.getContext("2d");
 		tia.screen = tia.context.createImageData(tia.dim.HPICTURE, tia.dim.VPICTURE);
 		
+		for (var i = 3; i < (tia.canvas.width*tia.canvas.height)*4; i+=4)
+			tia.screen.data[i] = 255;
+		
 		
 		/*Stuff that can't be set until tia is created*/
-		
-		/*Array View*/
-		tia.ram =  new Uint8Array(tia.memory, 0);
 		
 		/*Missiles*/
 		tia.m0 = new missle(tia.reg.RESMP0);
@@ -463,10 +542,9 @@ tia =
 	},
 	
 	/*get the color represented by the given color register*/
-	getColor: function(a)
+	getColor: function(lum, col)
 	{
-		var v = tia.ram[a];
-		return tia.color_rgb[(v&14)>>1][(v&240)>>4];
+		return tia.color_rgb[lum][col];
 	},
 	
 	/*Strobe functions*/
@@ -477,10 +555,12 @@ tia =
 		RSYCN: function() {},
 		
 		//Clear collision registers
-		CXCLR: function() { tia.ram[tia.reg.CXM1P] = tia.ram[tia.reg.CXM1P] = tia.ram[tia.reg.CXP0FB] = tia.ram[tia.reg.CXP1FB] = tia.ram[tia.reg.CXM0FB] = tia.ram[tia.reg.CXM01FB] = tia.ram[tia.reg.CXBLPF] = tia.ram[tia.reg.CXPPMM] = 0;},
+		CXCLR: function() { tia.CXM1P = tia.CXM1P = tia.CXP0FB = tia.CXP1FB = tia.CXM0FB = tia.CXM01FB = tia.CXBLPF = tia.CXPPMM = 0;},
 		
-		//HMCLR: function() { mmu.tia[tia.reg.HMP0] = mmu.tia[tia.reg.HMP1] = mmu.tia[tia.reg.HMM0] = mmu.tia[tia.reg.HMM1] = mmu.tia[tia.reg.HMBL] = 0; }, //Clear Horizontal motion registers
-		HMCLR: function() { tia.ram[tia.reg.HMP0] = tia.ram[tia.reg.HMP1] = tia.ram[tia.reg.HMM0] = tia.ram[tia.reg.HMM1] = tia.ram[tia.reg.HMBL] = 0; },
+		HMCLR: function() 
+		{ 
+			tia.HMP0 = tia.HMP1 = tia.HMM0 = tia.HMM1 = tia.HMBL = 8;
+		},
 		/*Schedule position resets*/
 		RESP0: function() { tia.p0.reset(); },
 		RESP1: function() { tia.p1.reset(); },
@@ -507,12 +587,14 @@ tia =
 		tia.pos.y++;
 		cpu.paused = false;
 		tia.dim.HBLANK = 68;
+		tia.l = (tia.pos.y - tia.dim.TOP)*tia.canvas.width*4;
 	},
 	
 	/*Handle everything that happens at the beginning of a new frame*/
 	newFrame: function()
 	{
-		//tia.newLine();
+		//tia.screen_pointer = 0;
+		tia.newLine();
 		tia.pos.y = 0;
 		if (!tia.debug)
 		{
@@ -521,25 +603,24 @@ tia =
 		
 		if ((tia.skip++)%60 == 0) //Update FPS every 60 frames
 			debugging.updateFPS();
-			
-		//debug(tia.ram[tia.reg.GRP0]);
 	},
 	
 	/*Update the x and y positions of the TIA (CLK and Scan lines)*/
 	updatePos: function()
 	{	
-		if ((tia.ram[tia.reg.VSYNC]&2) && !tia.vsync) //Only create a new frame once per VSYNC
+		if ((tia.VSYNC) && !tia.vsync) //Only create a new frame once per VSYNC
 		{
 			tia.vsync = true;
 			tia.newFrame();
 		}
 		else
 		{
-			if (!(tia.ram[tia.reg.VSYNC]&2) && tia.vsync) //VSYNC turned off
+			if (!tia.VSYNC && tia.vsync) //VSYNC turned off
 			{
 				tia.vsync = false;
 			}
-				
+			
+			(function incX() {
 			if (++tia.pos.x >= tia.dim.WIDTH)
 			{
 				tia.newLine();
@@ -551,143 +632,141 @@ tia =
 				}*/
 				
 				//Experimental - expand screen if there are more color scan lines
-				if (tia.pos.y >= tia.dim.BOTTOM && !(tia.ram[tia.reg.VBLANK]&2))
+				if (tia.pos.y >= tia.dim.BOTTOM && !tia.VBLANK)
 				{
 					tia.dim.BOTTOM++;
 					tia.dim.VPICTURE++;
 					tia.dim.OVERSCAN--;
 					tia.canvas.height++;
 					tia.screen = tia.context.createImageData(tia.dim.HPICTURE, tia.dim.VPICTURE);
+					for (var i = 3; i < (tia.canvas.width*tia.canvas.height)*4; i+=4)
+						tia.screen.data[i] = 255;
 				}
-			}
+			}})();
 			
 			
 			/*Check HMOVE counter against HMXX registers and decrement the counter*/
-			
+			(function updateHmoveCounter() {
 			if (tia.hmove_counter >= 0) //If HMOVE was strobed and the counter is still counting down
 			{
 				/*Players*/
-				if ((((tia.ram[tia.reg.HMP0]>>4)^8)&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
+				if ((tia.HMP0&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
 				{
 					tia.p0.hmove_latch = false;
 				}
-				if ((((tia.ram[tia.reg.HMP1]>>4)^8)&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
+				if ((tia.HMP1&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
 				{
 					tia.p1.hmove_latch = false;
 				}
 				
 				/*Missles*/
-				if ((((tia.ram[tia.reg.HMM0]>>4)^8)&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
+				if ((tia.HMM0&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
 				{
 					tia.m0.hmove_latch = false;
 				}
-				if ((((tia.ram[tia.reg.HMM1]>>4)^8)&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
+				if ((tia.HMM1&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
 				{
 					tia.m1.hmove_latch = false;
 				}
 				
 				/*Ball*/
-				if ((((tia.ram[tia.reg.HMBL]>>4)^8)&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
+				if ((tia.HMBL&tia.hmove_counter) == 0) //If when the MSB of the HMXX register is flipped, it has no bits in common with the hmove_register
 				{
 					tia.bl.hmove_latch = false;
 				}
 				
 				tia.hmove_counter--;
-			}
+			}})();
 			
 			
 			/*If we are still in HBLANK and the hmove_latches are still set, increment the counters*/
+			(function incInHblank() {
 			if ((tia.pos.x < tia.dim.HBLANK))
 			{
 				/*Players*/
 				if (tia.p0.hmove_latch)
-					tia.p0.inc(tia.ram[tia.reg.NUSIZ0]&7);
+					tia.p0.inc(tia.NUSIZ0_PSIZE);
 				
 				if (tia.p1.hmove_latch)
-					tia.p1.inc(tia.ram[tia.reg.NUSIZ1]&7);
+					tia.p1.inc(tia.NUSIZ1_PSIZE);
 					
 					
 				/*Missles*/	
 				if (tia.m0.hmove_latch)
-					tia.m0.inc(tia.ram[tia.reg.NUSIZ0]&7);
+					tia.m0.inc(tia.NUSIZ0_PSIZE);
 					
 				if (tia.m1.hmove_latch)
-					tia.m1.inc(tia.ram[tia.reg.NUSIZ1]&7);
+					tia.m1.inc(tia.NUSIZ1_PSIZE);
 					
 				/*Ball*/
 				if (tia.bl.hmove_latch)
 					tia.m1.inc();
-			}
+			}})();
 			
 			/*Playing Field*/
+			(function incPlayingField() {
 			if ((tia.pos.x >= (tia.dim.HBLANK - 4)) && (tia.pos.x%4 == 0)) //every 4 clocks and if the position is at least 4 clocks before starting the picture
 			{
 				tia.pf_current = tia.pf_buffer;
+				tia.pf_current_r = tia.pf_buffer_r;
+				tia.pf_current_g = tia.pf_buffer_g;
+				tia.pf_current_b = tia.pf_buffer_b;
 				tia.pf_buffer = tia.pfBuffer();
-			}
+				// if (!tia.pfBuffer())
+				// {
+					// tia.pf_buffer_r = tia.pf_buffer_g = tia.pf_buffer_b = null;
+				// }
+			}})();
 			
 			if((tia.pos.x >= tia.dim.HBLANK)) //Every visible clock - incremement counters, decremement start_counters and incremement graphics counters
 			{
 				var set_array = [0,0,0,0,0,0];
+				var set = 0;
 				var num_set = 0;
 				
 				/*******PLAYERS*******/
 			
 				/*Increment the players' main counter*/
-				tia.p0.inc(tia.ram[tia.reg.NUSIZ0]&7);
-				tia.p1.inc(tia.ram[tia.reg.NUSIZ1]&7);
+				(function incPlayers() {
+				tia.p0.inc(tia.NUSIZ0_PSIZE);
+				tia.p1.inc(tia.NUSIZ1_PSIZE);})();
 				
 				/*Decrement the players' start counters*/
+				(function playerDecStart() {
 				if (tia.p0.start_counter >= 0)
 					tia.p0.dec_start();
 				if (tia.p1.start_counter >= 0)
-					tia.p1.dec_start();
+					tia.p1.dec_start();})();
 				
 				
 				/*Incremement graphics counters*/
-				
+				(function playerIncGraphics() {
 				/*Player 0*/
 				if (tia.p0.graphics_scan_counter <= 8)
 				{
-					if ((tia.ram[tia.reg.NUSIZ0]&7) == 5) //For double sized players, every 2 clocks
+					if (tia.NUSIZ0_PSIZE == 5) //For double sized players, every 2 clocks
 					{
 						if (tia.pos.x%2 == 0)
 						{
 							tia.p0.inc_graphics();
-							// if (tia.p0.start_counter <= 0)
-							// {
-								// if (++tia.p0.graphics_scan_counter == 4)
-									// tia.p0.missle.resetP();
-							// }
 						}
 					}
-					else if ((tia.ram[tia.reg.NUSIZ0]&7) == 7) //For quad sized players, every 4 clocks
+					else if (tia.NUSIZ0_PSIZE == 7) //For quad sized players, every 4 clocks
 					{
 						if (tia.pos.x%4 == 0)
 						{
 							tia.p0.inc_graphics();
-							// if (tia.p0.start_counter <= 0)
-							// {
-								// if (++tia.p0.graphics_scan_counter == 4)
-									// tia.p0.missle.resetP();
-							// }
 						}
 					}
 					else
 					{
 						tia.p0.inc_graphics(); //For regular players
-						// if (tia.p0.start_counter <= 0)
-						// {
-							// if (++tia.p0.graphics_scan_counter == 4)
-								// tia.p0.missle.resetP();
-						// }
 					}
 					
-					if (tia.ram[tia.reg.GRP0] && tia.p0.pixel(tia.ram[tia.reg.GRP0], tia.ram[tia.reg.REFP0]&8, tia.ram[tia.reg.VDELP0]&1))
+					if (tia.GRP0 && tia.p0.pixel(tia.GRP0, tia.REFP0_D3, tia.VDELP0))
 					{
-						//color = tia.getColor(tia.reg.COLUP0);
-						//set_array[0] = tia.getColor(tia.reg.COLUP0);
 						set_array[0] = true;
+						set += 1;
 						num_set++;
 					}
 				}
@@ -695,12 +774,12 @@ tia =
 				/*Player 1*/
 				if (tia.p1.graphics_scan_counter <= 8)
 				{				
-					if ((tia.ram[tia.reg.NUSIZ1]&7) == 5) //For double sized players, every 2 clocks
+					if ((tia.NUSIZ1_PSIZE) == 5) //For double sized players, every 2 clocks
 					{
 						if (tia.pos.x%2 == 0)
 							tia.p1.inc_graphics();
 					}
-					else if ((tia.ram[tia.reg.NUSIZ1]&7) == 7) //For quad sized players, every 4 clocks
+					else if ((tia.NUSIZ1_PSIZE) == 7) //For quad sized players, every 4 clocks
 					{
 						if (tia.pos.x%4 == 0)
 							tia.p1.inc_graphics();
@@ -708,55 +787,58 @@ tia =
 					else
 						tia.p1.inc_graphics();
 						
-					if (tia.ram[tia.reg.GRP1] && tia.p1.pixel(tia.ram[tia.reg.GRP1], tia.ram[tia.reg.REFP1]&8, tia.ram[tia.reg.VDELP0]&1))
+					if (tia.GRP1 && tia.p1.pixel(tia.GRP1, tia.REFP1_D3, tia.VDELP1))
 					{	
 						set_array[2] = true;
+						set += 4;
 						num_set++;
 					}
-				}	
+				}})();	
 					
 					
 				/*******MISSLES*******/
-			
+				(function missles() {
+				
 				/*Increment the missles' main counter*/
-				tia.m0.inc(tia.ram[tia.reg.NUSIZ0]&7);
-				tia.m1.inc(tia.ram[tia.reg.NUSIZ1]&7);
+				(function incMissles() {
+				tia.m0.inc(tia.NUSIZ0_PSIZE);
+				tia.m1.inc(tia.NUSIZ1_PSIZE);})();
 				
 				/*Decrement the missles' start counters*/
+				(function decMisslesStart() {
 				if (tia.m0.start_counter > 0)
 					tia.m0.dec_start();
 				if (tia.m1.start_counter > 0)
-					tia.m1.dec_start();
+					tia.m1.dec_start();})();
 				
 				
 				/*Incremement graphics counters*/
-				
+				(function incMissileGraphics() {
 				/*Missle 0*/
 				if (tia.m0.graphics_scan_counter <= 1)
 				{
-					if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 0) //For regular missles, 1px
+					switch(tia.NUSIZ0_MIS)
 					{
-						tia.m0.inc_graphics();
-					}
-					if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 1) //For double sized missles, every 2 clocks
-					{
-						if (tia.pos.x%2 == 0)
+						case 0: //For regular missles, 1px
 							tia.m0.inc_graphics();
-					}
-					else if (((tia.ram[tia.reg.NUSIZ0]>>4)&3) == 2) //For quad sized missles, every 4 clocks
-					{
-						if (tia.pos.x%4 == 0)
-							tia.m0.inc_graphics();
-					}
-					else  //For ccto sized missles, every 8 clocks
-					{
-						if (tia.pos.x%8 == 0)
-							tia.m0.inc_graphics();
+							break;
+						case 1: //For double sized missles, every 2 clocks
+							if (tia.pos.x%2 == 0)
+								tia.m0.inc_graphics();
+							break;
+						case 2: //For quad sized missles, every 4 clocks
+							if (tia.pos.x%4 == 0)
+								tia.m0.inc_graphics();
+							break;
+						default:  //For ccto sized missles, every 8 clocks
+							if (tia.pos.x%8 == 0)
+								tia.m0.inc_graphics();
 					}
 					
-					if (tia.m0.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM0]&2)
+					if (tia.m0.graphics_scan_counter == 0 && tia.ENAM0)
 					{
 						set_array[1] = true;
+						set += 2;
 						num_set++;
 					}
 				}
@@ -765,37 +847,36 @@ tia =
 				/*Missle 1*/
 				if (tia.m1.graphics_scan_counter <= 1)
 				{
-					if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 0) //For regular missles, 1px
+					switch(tia.NUSIZ1_MIS)
 					{
-						tia.m1.inc_graphics();
-					}
-					if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 1) //For double sized missles, every 2 clocks
-					{
-						if (tia.pos.x%2 == 0)
+						case 0: //For regular missles, 1px
 							tia.m1.inc_graphics();
-					}
-					else if (((tia.ram[tia.reg.NUSIZ1]>>4)&3) == 2) //For quad sized missles, every 4 clocks
-					{
-						if (tia.pos.x%4 == 0)
-							tia.m1.inc_graphics();
-					}
-					else //For ccto sized missles, every 8 clocks
-					{
-						if (tia.pos.x%8 == 0)
-							tia.m1.inc_graphics();
+							break;
+						case 1: //For double sized missles, every 2 clocks
+							if (tia.pos.x%2 == 0)
+								tia.m1.inc_graphics();
+							break;
+						case 2: //For quad sized missles, every 4 clocks
+							if (tia.pos.x%4 == 0)
+								tia.m1.inc_graphics();
+							break;
+						default:  //For ccto sized missles, every 8 clocks
+							if (tia.pos.x%8 == 0)
+								tia.m1.inc_graphics();
 					}
 					
-					if (tia.m1.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM1]&2)
+					if (tia.m1.graphics_scan_counter == 0 && tia.ENAM1)
 					{
 						set_array[3] = true;
+						set += 8;
 						num_set++;
 					}
-				}
-					
+				}})();
+				})();
 				
 				
 				/*******BALL*******/
-			
+				(function ball(){
 				/*Increment the ball's main counter*/
 				tia.bl.inc();
 				
@@ -807,16 +888,16 @@ tia =
 				/*Incremement graphics counter*/
 				if (tia.bl.graphics_scan_counter <= 1)
 				{
-					if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 0) //For regular sized ball, every clock
+					if (tia.CTRLPF_BALL == 0) //For regular sized ball, every clock
 					{
 							tia.bl.inc_graphics();
 					}
-					else if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 1) //For double sized ball, every 2 clocks
+					else if (tia.CTRLPF_BALL == 1) //For double sized ball, every 2 clocks
 					{
 						if (tia.pos.x%2 == 0)
 							tia.bl.inc_graphics();
 					}
-					else if (((tia.ram[tia.reg.CTRLPF]>>4)&3) == 2) //For quad sized ball, every 4 clocks
+					else if (tia.CTRLPF_BALL == 2) //For quad sized ball, every 4 clocks
 					{
 						if (tia.pos.x%4 == 0)
 							tia.bl.inc_graphics();
@@ -827,86 +908,130 @@ tia =
 							tia.bl.inc_graphics();
 					}
 					
-					if (tia.bl.graphics_scan_counter == 0 && tia.bl.pixel(tia.ram[tia.reg.ENABL]&2, tia.ram[tia.reg.VDELBL]&1))
+					if (tia.bl.graphics_scan_counter == 0 && tia.bl.pixel(tia.ENABL, tia.VDELBL))
 					{
 						set_array[4] = true;
+						set += 16;
 						num_set++;
 					}
-				}
+				}})();
 				
-				
+				(function draw(){
 				if (tia.pos.y >= tia.dim.TOP && tia.pos.y < tia.dim.BOTTOM-1) //If the position is on the visible screen
 				{
-					var color = null;
+					//var color = null;
+					var color_r = null;
+					var color_g = null;
+					var color_b = null;
 					
-					if (tia.ram[tia.reg.VBLANK]&2) //If VBLANK is set
-						color = [0x00,0x00,0x00];
+					if (tia.VBLANK) //If VBLANK is set
+					{
+						//color = [0x00,0x00,0x00];
+						color_r = color_g = color_b = 0;
+					}
 					else
 					{
 						/*Then check the Playingfield*/
 						if (tia.pf_current)
 						{
 							set_array[5] = true;
+							set += 32;
 							num_set++;
 						}
 						
-						
-						if (!(tia.ram[tia.reg.CTRLPF]&2))
+						if (set)
 						{
-							if (set_array[0])
-								color = tia.getColor(tia.reg.COLUP0);
-							else if (set_array[1])
-								color = tia.getColor(tia.reg.COLUP0);
-							else if (set_array[2])
-								color = tia.getColor(tia.reg.COLUP1);
-							else if (set_array[3])
-								color = tia.getColor(tia.reg.COLUP1);
-							else if (set_array[4])
-								color = tia.getColor(tia.reg.COLUPF);
-							else if (set_array[5])
-								color = tia.pf_current;
+							if (!tia.CTRLPF_D2)
+							{								
+								if (set&3)
+								{
+									color_r = tia.colup0_r;
+									color_g = tia.colup0_g;
+									color_b = tia.colup0_b;
+								}
+								else if (set&12)
+								{
+									color_r = tia.colup1_r;
+									color_g = tia.colup1_g;
+									color_b = tia.colup1_b;
+								}
+								else if (set&16)
+								{
+									color_r = tia.colubk_r;
+									color_g = tia.colubk_g;
+									color_b = tia.colubk_b;
+								}
+								else if (set&32)
+								{
+									color_r = tia.pf_current_r;
+									color_g = tia.pf_current_g;
+									color_b = tia.pf_current_b;
+								}
+							}
+							else
+							{
+								if (set&32)
+								{
+									color_r = tia.pf_current_r;
+									color_g = tia.pf_current_g;
+									color_b = tia.pf_current_b;
+								}
+								else if (set&16)
+								{
+									color_r = tia.colubk_r;
+									color_g = tia.colubk_g;
+									color_b = tia.colubk_b;
+								}
+								else if (set&3)
+								{
+									color_r = tia.colup0_r;
+									color_g = tia.colup0_g;
+									color_b = tia.colup0_b;
+								}
+								else if (set&12)
+								{
+									color_r = tia.colup1_r;
+									color_g = tia.colup1_g;
+									color_b = tia.colup1_b;
+								}	
+							}
 						}
 						else
 						{
-							if (set_array[5])
-								color = tia.pf_current;
-							else if (set_array[4])
-								color = tia.getColor(tia.reg.COLUPF);
-							else if (set_array[0])
-								color = tia.getColor(tia.reg.COLUP0);
-							else if (set_array[1])
-								color = tia.getColor(tia.reg.COLUP0);
-							else if (set_array[2])
-								color = tia.getColor(tia.reg.COLUP1);
-							else if (set_array[3])
-								color = tia.getColor(tia.reg.COLUP1);
-							
+							color_r = tia.colubk_r;
+							color_g = tia.colubk_g;
+							color_b = tia.colubk_b;
 						}
 						
 						if (num_set >= 2)
 							tia.checkCollisions(set_array);
-						if (color == null)
-							color = tia.getColor(tia.reg.COLUBK);	
+						
 					}
 					
+					(function setScreenData(){
 					if (!tia.debug)
 					{
-						//debug(color);
-						var l = (tia.pos.y - tia.dim.TOP)*tia.canvas.width*4 + (tia.pos.x - tia.dim.HBLANK)*4;
-						tia.screen.data[l++] = color[0];
-						tia.screen.data[l++] = color[1];
-						tia.screen.data[l++] = color[2];
-						tia.screen.data[l] = 255;
+						// var l = ((tia.pos.y - tia.dim.TOP)*tia.canvas.width + (tia.pos.x - tia.dim.HBLANK))*4;
+						// tia.screen.data[l] = color_r;
+						// tia.screen.data[l+1] = color_g;
+						// tia.screen.data[l+2] = color_b;
+						
+						tia.screen.data[tia.l] = color_r;
+						tia.screen.data[tia.l+1] = color_g;
+						tia.screen.data[tia.l+2] = color_b;
+						tia.l += 4;
 					}
 					else
 					{
 						tia.context.fillStyle = util.colorString(color);
 						tia.context.fillRect((tia.canvas.width/tia.dim.HPICTURE)*(tia.pos.x - tia.dim.HBLANK), (tia.canvas.height/tia.dim.VPICTURE)*(tia.pos.y - tia.dim.TOP), tia.canvas.width/tia.dim.HPICTURE, tia.canvas.height/tia.dim.VPICTURE);
-					}
-				}
+					}})();
+				}})();
 			}
 		}
 	},
+	
+	l: 0,
 	
 	pfBuffer: function()
 	{
@@ -916,178 +1041,81 @@ tia =
 		var set = false;
 		/*First half*/
 		if (p < 4)
-			set = tia.ram[tia.reg.PF0]&(Math.pow(2, 4+p));
+			set = tia.PF0&(Math.pow(2, 4+p));
 		else if ((p-=4) < 8)
 		{
-			set = tia.ram[tia.reg.PF1]&(Math.pow(2, (7-p)));
+			set = tia.PF1&(Math.pow(2, (7-p)));
 		}
 		else if ((p-=8) < 8)
-			set = tia.ram[tia.reg.PF2]&(Math.pow(2, p));
+			set = tia.PF2&(Math.pow(2, p));
 		
 		/*Second Half*/
-		else if (!(tia.ram[tia.reg.CTRLPF]&1)) //Duplicated
+		else if (!tia.CTRLPF_D0) //Duplicated
 		{
 			if ((p-=8) < 4)
-				set = tia.ram[tia.reg.PF0]&(Math.pow(2, 4+p));
+				set = tia.PF0&(Math.pow(2, 4+p));
 			else if ((p-=4) < 8)
-				set = tia.ram[tia.reg.PF1]&(Math.pow(2, (7-p)));
+				set = tia.PF1&(Math.pow(2, (7-p)));
 			else if ((p-=8) < 8)
-				set = tia.ram[tia.reg.PF2]&(Math.pow(2, p));
+				set = tia.PF2&(Math.pow(2, p));
 		}
 		else //Reflected
 		{
 			if ((p-=8) < 8)
-				set = tia.ram[tia.reg.PF2]&(Math.pow(2, 7-p));
+				set = tia.PF2&(Math.pow(2, 7-p));
 			else if ((p-=8) < 8)
-				set = tia.ram[tia.reg.PF1]&(Math.pow(2, p));
+				set = tia.PF1&(Math.pow(2, p));
 			else if ((p-=8) < 4)
-				set = tia.ram[tia.reg.PF0]&(Math.pow(2, 7-p));
+				set = tia.PF0&(Math.pow(2, 7-p));
 		}
 		
 		if (set)
 		{
-			if (tia.ram[tia.reg.CTRLPF]&2)
+			if (tia.CTRLPF_D1)
 			{
 				if (pos <= 19)
 				{
-					return tia.getColor(tia.reg.COLUP0);
+					tia.pf_buffer_r = tia.colup0_r;
+					tia.pf_buffer_g = tia.colup0_g;
+					tia.pf_buffer_b = tia.colup0_b;
+					return true;
 				}
 				else
 				{
-					//debug(p);
-					return tia.getColor(tia.reg.COLUP1);
+					tia.pf_buffer_r = tia.colup1_r;
+					tia.pf_buffer_g = tia.colup1_g;
+					tia.pf_buffer_b = tia.colup1_b;
+					return true;
 				}
 			}
 			else
-				return tia.getColor(tia.reg.COLUPF);
+			{
+				tia.pf_buffer_r = tia.colupf_r;
+				tia.pf_buffer_g = tia.colupf_g;
+				tia.pf_buffer_b = tia.colupf_b;
+				return true;
+			}
 		}
 		else
 			return null;
 	},
-	
-	//set_array: [0,0,0,0,0,0],
-	
-	/*Draw the pixel at x,y*/
-	drawPixel: function()
-	{
-		
-		if (tia.pos.x >= tia.dim.HBLANK && tia.pos.x < tia.dim.WIDTH && tia.pos.y >= tia.dim.TOP && tia.pos.y < tia.dim.BOTTOM-1) //If the position is on the visible screen
-		{
-			var color = null;
-			
-			if (tia.ram[tia.reg.VBLANK]&2) //If VBLANK is set
-				color = [0x00,0x00,0x00];
-			else
-			{
-				//var set_array = [0,0,0,0,0,0];
-				var set_array = [0,0,0,0,0,0];
-				/*Check p0 first*/
-				if (tia.ram[tia.reg.GRP0] && tia.p0.graphics_scan_counter >=0 && tia.p0.graphics_scan_counter < 8 && tia.p0.pixel(tia.ram[tia.reg.GRP0], tia.ram[tia.reg.REFP0]&8, tia.ram[tia.reg.VDELP0]&1))
-				{
-					//color = tia.getColor(tia.reg.COLUP0);
-					set_array[0] = tia.getColor(tia.reg.COLUP0);
-				}
-				
-				/*Check m0*/
-				//if (tia.m0.graphics_scan_counter == 0 && tia.m0.pixel(tia.ram[tia.reg.ENAM0]&2))
-				if (tia.m0.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM0]&2)
-					set_array[1] = tia.getColor(tia.reg.COLUP0);
-					
-				/*Then check p1*/
-				if (tia.ram[tia.reg.GRP1] && tia.p1.graphics_scan_counter >=0 && tia.p1.graphics_scan_counter < 8 && tia.p1.pixel(tia.ram[tia.reg.GRP1], tia.ram[tia.reg.REFP1]&8, tia.ram[tia.reg.VDELP0]&1))
-					set_array[2] = tia.getColor(tia.reg.COLUP1);
-					
-				/*Check m1*/
-				//if (tia.m1.pixel(tia.ram[tia.reg.ENAM1]&2))
-				if (tia.m1.graphics_scan_counter == 0 && tia.ram[tia.reg.ENAM1]&2)
-					set_array[3] = tia.getColor(tia.reg.COLUP1);
-					
-				
-				/*Check BL*/
-				if (tia.bl.graphics_scan_counter == 0 && tia.bl.pixel(tia.ram[tia.reg.ENABL]&2, tia.ram[tia.reg.VDELBL]&1))
-					set_array[4] = tia.getColor(tia.reg.COLUPF);
-				
-				/*Then check the Playingfield*/
-				set_array[5] = tia.pf_current;
-				
-				var p_array = tia.priority;
-				if (tia.ram[tia.reg.CTRLPF]&2)
-					p_array = tia.priority_alt;
-				
-				// for (var i = 0; i < set_array.length; i++)
-				// {
-					// if (set_array[p_array[i]])
-					// {
-						// color = set_array[p_array[i]];
-						// break;
-					// }
-				// }
-				
-				if (set_array[p_array[0]])
-					color = set_array[p_array[0]];
-				else if (set_array[p_array[1]])
-					color = set_array[p_array[1]];
-				else if (set_array[p_array[2]])
-					color = set_array[p_array[2]];
-				else if (set_array[p_array[3]])
-					color = set_array[p_array[3]];
-				else if (set_array[p_array[4]])
-					color = set_array[p_array[4]];
-				else if (set_array[p_array[5]])
-					color = set_array[p_array[5]];
-				
-				if (color != null)
-					tia.checkCollisions(set_array);
-				else
-					color = tia.getColor(tia.reg.COLUBK);	
-			}
-			
-			if (!tia.debug)
-			{
-				//debug(color);
-				var l = (tia.pos.y - tia.dim.TOP)*tia.canvas.width*4 + (tia.pos.x - tia.dim.HBLANK)*4;
-				tia.screen.data[l++] = color[0];
-				tia.screen.data[l++] = color[1];
-				tia.screen.data[l++] = color[2];
-				tia.screen.data[l] = 255;
-			}
-			else
-			{
-				tia.context.fillStyle = util.colorString(color);
-				tia.context.fillRect((tia.canvas.width/tia.dim.HPICTURE)*(tia.pos.x - tia.dim.HBLANK), (tia.canvas.height/tia.dim.VPICTURE)*(tia.pos.y - tia.dim.TOP), tia.canvas.width/tia.dim.HPICTURE, tia.canvas.height/tia.dim.VPICTURE);
-			}
-		}
-		
-		//document.getElementById("xy").innerHTML = tia.pos.x + "," + tia.pos.y + ", color = " + tia.ram[tia.reg.COLUBK] + ", p0 = " + tia.p0 + ", GRP0 = " + tia.ram[tia.reg.GRP0];
-		
-		if (tia.debug)
-		{
-			//debug(tia.pos.x + "," + tia.pos.y + ", color: " + tia.ram[tia.reg.COLUBK]);
-			document.getElementById("xy").innerHTML = tia.pos.x + "," + tia.pos.y + ", color = " + tia.ram[tia.reg.COLUBK] + ", p0 = " + tia.p0 + ", GRP0 = " + tia.ram[tia.reg.GRP0];
-			document.getElementById("pf0").innerHTML = tia.ram[tia.reg.PF0].toString(2);
-			document.getElementById("pf1").innerHTML = tia.ram[tia.reg.PF1].toString(2);
-			document.getElementById("pf2").innerHTML = tia.ram[tia.reg.PF2].toString(2);
-		}
-	},
-	
+
 	checkCollisions: function(a)
 	{
-		tia.ram[tia.reg.CXM0P] |= (((a[1]&&a[2])<<7) + ((a[1]&&a[0])<<6)); 
-		tia.ram[tia.reg.CXM1P] |= (((a[3]&&a[0])<<7) + ((a[3]&&a[2])<<6)); 
-		tia.ram[tia.reg.CXP0FB] |= (((a[0]&&a[5])<<7) + ((a[0]&&a[4])<<6)); 
-		tia.ram[tia.reg.CXP1FB] |= (((a[2]&&a[5])<<7) + ((a[2]&&a[4])<<6)); 
-		tia.ram[tia.reg.CXM0FB] |= (((a[1]&&a[5])<<7) + ((a[1]&&a[4])<<6)); 
-		tia.ram[tia.reg.CXM1FB] |= (((a[3]&&a[5])<<7) + ((a[3]&&a[4])<<6)); 
-		tia.ram[tia.reg.CXBLPF] |= ((a[4]&&a[5])<<7); 
-		tia.ram[tia.reg.CXPPMM] |= (((a[0]&&a[2])<<7) + ((a[1]&&a[3])<<6)); 
+		tia.CXM0P |= (((a[1]&&a[2])<<7) + ((a[1]&&a[0])<<6)); 
+		tia.CXM1P |= (((a[3]&&a[0])<<7) + ((a[3]&&a[2])<<6)); 
+		tia.CXP0FB |= (((a[0]&&a[5])<<7) + ((a[0]&&a[4])<<6)); 
+		tia.CXP1FB |= (((a[2]&&a[5])<<7) + ((a[2]&&a[4])<<6)); 
+		tia.CXM0FB |= (((a[1]&&a[5])<<7) + ((a[1]&&a[4])<<6)); 
+		tia.CXM1FB |= (((a[3]&&a[5])<<7) + ((a[3]&&a[4])<<6)); 
+		tia.CXBLPF |= ((a[4]&&a[5])<<7); 
+		tia.CXPPMM |= (((a[0]&&a[2])<<7) + ((a[1]&&a[3])<<6)); 
 		tia.ram_changed = true;
 	},
 
 	
 	step: function()
 	{
-		
-		//tia.drawPixel();
 		tia.updatePos();
 		if (tia.ram_changed)
 		{
@@ -1108,31 +1136,170 @@ tia =
 					tia.strobe_reg[tia.write]();
 				}
 				catch(e){debug(e);}
+				tia.write = -1;
+				return;
 			}
 			
 			else if (tia.write == tia.reg.GRP0) //if GRP0 was written to, move GRP1 to p1.old
-				tia.p1.old = tia.ram[tia.reg.GRP1];
+				tia.p1.old = tia.GRP1;
 				
 			else if (tia.write == tia.reg.GRP1) //if GRP1 was written to, move GRP0 to p0.old and move ENABL to something or another
 			{
-				tia.p0.old = tia.ram[tia.reg.GRP0];
+				tia.p0.old = tia.GRP0;
 				
 				//TODO: ENABL
 			}
 				
 			
-			tia.ram[tia.write] = mmu.tia[tia.write];
+			switch(tia.write)
+			{
+				case tia.reg.VSYNC: 
+					tia.VSYNC = mmu.tia[tia.write]&2; 
+					break;
+				case tia.reg.VBLANK: 
+					tia.VBLANK = mmu.tia[tia.write]&2; 
+					break;
+				case tia.reg.NUSIZ0: 
+					tia.NUSIZ0 = mmu.tia[tia.write]; 
+					tia.NUSIZ0_MIS = (tia.NUSIZ0>>4)&3;
+					tia.NUSIZ0_PSIZE = tia.NUSIZ0&7;
+					break;
+				case tia.reg.NUSIZ1: 
+					tia.NUSIZ1 = mmu.tia[tia.write]; 
+					tia.NUSIZ1_MIS = (tia.NUSIZ1>>4)&3;
+					tia.NUSIZ1_PSIZE = tia.NUSIZ1&7;
+					break;
+				case tia.reg.COLUP0: 
+					tia.COLUP0 = mmu.tia[tia.write]; 
+					tia.COLUP0_LUM = (tia.COLUP0&14)>>1; 
+					tia.COLUP0_COL = (tia.COLUP0&240)>>4;
+					
+					var color = tia.getColor(tia.COLUP0_LUM, tia.COLUP0_COL);
+					tia.colup0_r = color[0];
+					tia.colup0_g = color[1];
+					tia.colup0_b = color[2];
+					break;
+				case tia.reg.COLUP1: 
+					tia.COLUP1 = mmu.tia[tia.write]; 
+					tia.COLUP1_LUM = (tia.COLUP1&14)>>1; 
+					tia.COLUP1_COL = (tia.COLUP1&240)>>4;
+					
+					var color = tia.getColor(tia.COLUP1_LUM, tia.COLUP1_COL);
+					tia.colup1_r = color[0];
+					tia.colup1_g = color[1];
+					tia.colup1_b = color[2];
+					break;
+				case tia.reg.COLUPF: 
+					tia.COLUPF = mmu.tia[tia.write]; 
+					tia.COLUPF_LUM = (tia.COLUPF&14)>>1; 
+					tia.COLUPF_COL = (tia.COLUPF&240)>>4;
+					
+					var color = tia.getColor(tia.COLUPF_LUM, tia.COLUPF_COL);
+					tia.colupf_r = color[0];
+					tia.colupf_g = color[1];
+					tia.colupf_b = color[2];
+					break;
+				case tia.reg.COLUBK: 
+					tia.COLUBK = mmu.tia[tia.write]; 
+					tia.COLUBK_LUM = (tia.COLUBK&14)>>1; 
+					tia.COLUBK_COL = (tia.COLUBK&240)>>4;
+					
+					var color = tia.getColor(tia.COLUBK_LUM, tia.COLUBK_COL);
+					tia.colubk_r = color[0];
+					tia.colubk_g = color[1];
+					tia.colubk_b = color[2];
+					break;
+				case tia.reg.CTRLPF: 
+					tia.CTRLPF = mmu.tia[tia.write]; 
+					tia.CTRLPF_D0 = tia.CTRLPF&1;
+					tia.CTRLPF_D1 = tia.CTRLPF&2; 
+					tia.CTRLPF_D2 = tia.CTRLPF&4;
+					tia.CTRLPF_BALL = (tia.CTRLPF>>4)&3;
+					break;
+				case tia.reg.REFP0: 
+					tia.REFP0 = mmu.tia[tia.write];
+					tia.REFP0_D3 = tia.REFP0&8;
+					break;
+				case tia.reg.REFP1: 
+					tia.REFP1 = mmu.tia[tia.write]; 
+					tia.REFP1_D3 = tia.REFP1&8;
+					break;
+				case tia.reg.PF0	: tia.PF0 = mmu.tia[tia.write]; break;
+				case tia.reg.PF1	: tia.PF1 = mmu.tia[tia.write]; break;
+				case tia.reg.PF2	: tia.PF2 = mmu.tia[tia.write]; break;
+				case tia.reg.AUDC0	: tia.AUDC0 = mmu.tia[tia.write]; break;
+				case tia.reg.AUDC1	: tia.AUDC1 = mmu.tia[tia.write]; break;
+				case tia.reg.AUDF0	: tia.AUDF0 = mmu.tia[tia.write]; break;
+				case tia.reg.AUDF1	: tia.AUDF1 = mmu.tia[tia.write]; break;
+				case tia.reg.AUDV0	: tia.AUDV0 = mmu.tia[tia.write]; break;
+				case tia.reg.AUDV1	: tia.AUDV1 = mmu.tia[tia.write]; break;
+				case tia.reg.GRP0	: tia.GRP0 = mmu.tia[tia.write]; break;
+				case tia.reg.GRP1	: tia.GRP1 = mmu.tia[tia.write]; break;
+				case tia.reg.ENAM0: 
+					tia.ENAM0 = mmu.tia[tia.write]&2; 
+					break;
+				case tia.reg.ENAM1: 
+					tia.ENAM1 = mmu.tia[tia.write]&2; 
+					break;
+				case tia.reg.ENABL: 
+					tia.ENABL = mmu.tia[tia.write]&2; 
+					break;
+				case tia.reg.HMP0: 
+					tia.HMP0 = (mmu.tia[tia.write]>>4)^8; 
+					break;
+				case tia.reg.HMP1: 
+					tia.HMP1 = (mmu.tia[tia.write]>>4)^8; 
+					break;
+				case tia.reg.HMM0: 
+					tia.HMM0 = (mmu.tia[tia.write]>>4)^8; 
+					break;
+				case tia.reg.HMM1: 
+					tia.HMM1 = (mmu.tia[tia.write]>>4)^8; 
+					break;
+				case tia.reg.HMBL: 
+					tia.HMBL = (mmu.tia[tia.write]>>4)^8; 
+					break;
+				case tia.reg.VDELP0: 
+					tia.VDELP0 = mmu.tia[tia.write]&1; 
+					break;
+				case tia.reg.VDELP1: 
+					tia.VDELP1 = mmu.tia[tia.write]&1; 
+					break;
+				case tia.reg.VDELBL: 
+					tia.VDELBL = mmu.tia[tia.write]&1; 
+					break;
+				case tia.reg.RESMP0: 
+					tia.RESMP0 = mmu.tia[tia.write]; 
+					tia.RESMP0_D1 = tia.RESMP0&2;
+					break;
+				case tia.reg.RESMP1: 
+					tia.RESMP1 = mmu.tia[tia.write]; 
+					tia.RESMP1_D1 = tia.RESMP1&2;
+					break;
+			}
 				
 			tia.write = -1;
 		}
 	},
 	
 	sync_ram: function()
-	{
-		for (var i = 0x30; i <= 0x3D; i++)
-		{
-			mmu.tia[i] = tia.ram[i];
-		}
+	{	
+		mmu.tia[tia.reg.CXM0P] = tia.CXM0P;
+		mmu.tia[tia.reg.CXM1P] = tia.CXM1P;
+		mmu.tia[tia.reg.CXP0FB] = tia.CXP0FB;
+		mmu.tia[tia.reg.CXP1FB] = tia.CXP1FB;
+		mmu.tia[tia.reg.CXM0FB] = tia.CXM0FB;
+		mmu.tia[tia.reg.CXM1FB] = tia.CXM1FB;
+		mmu.tia[tia.reg.CXBLPF] = tia.CXBLPF;
+		mmu.tia[tia.reg.CXPPMM] = tia.CXPPMM;
+		
+		mmu.tia[tia.reg.INPT0] = tia.INPT0;
+		mmu.tia[tia.reg.INPT1] = tia.INPT1;
+		mmu.tia[tia.reg.INPT2] = tia.INPT2;
+		mmu.tia[tia.reg.INPT3] = tia.INPT3;
+		mmu.tia[tia.reg.INPT4] = tia.INPT4;
+		mmu.tia[tia.reg.INPT5] = tia.INPT5;
+		
 	},
 	
 	
@@ -1295,6 +1462,7 @@ tia =
 		]
 	]
 };
+
 
 tia.strobe_reg = 
 {

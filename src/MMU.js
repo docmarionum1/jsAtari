@@ -168,6 +168,11 @@ mmu =
 		var b = new BinFileReader(file); 
 		var rom = b.readString(b.getFileSize(), 0);
 		
+		mmu.loadRomString(rom);
+	},
+	
+	loadRomString: function(rom)
+	{
 		for (var i = 0; i < rom.length; i++)
 		{
 			mmu.rom[i] = rom.charCodeAt(i);
@@ -184,7 +189,7 @@ mmu =
 		//debug(lowBit + ", " + highBit + " = " + mmu.org);
 	},
 	
-	__init__: function(file, debug)
+	__init__: function(debug)
 	{
 		mmu.ram = new Uint8Array(mmu.memory, mmu.ram_start, mmu.ram_size);
 		mmu.rom = new Uint8Array(mmu.memory, mmu.rom_start, mmu.rom_size);
@@ -196,7 +201,6 @@ mmu =
 		mmu.pia = new Uint8Array(mmu.memory, mmu.pia_read_start, mmu.pia_size);
 		mmu.pia_write = new Uint8Array(mmu.memory, mmu.pia_write_start, mmu.pia_write_size);
 		mmu.pia_read = new Uint8Array(mmu.memory, mmu.pia_read_start, mmu.pia_read_size);
-		mmu.loadRom(file);
 		
 		mmu.debug = debug;
 	},

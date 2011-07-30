@@ -148,7 +148,16 @@ cpu =
 		while(cpu.running)
 		{
 			cpu.step();
-			if (cpu.counter > 262*78*1)
+			cpu.step();
+			cpu.step();
+			cpu.step();
+			cpu.step();
+			cpu.step();
+			cpu.step();
+			cpu.step();
+			cpu.step();
+			cpu.step();
+			if (cpu.counter > 262*78)
 			//if (cpu.counter > 1000)
 			{
 				//debug("over 1000");
@@ -392,7 +401,7 @@ cpu =
 		BVC_rel: function() {cpu.op.BR(!cpu.f.V_r());},
 		
 		/*Branch On Overflow Set*/
-		BVC_rel: function() {cpu.op.BR(cpu.f.V_r());},
+		BVS_rel: function() {cpu.op.BR(cpu.f.V_r());},
 		
 		
 		/*Test Bits In Memory Against Accumulator*/

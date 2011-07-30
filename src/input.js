@@ -48,7 +48,7 @@ input =
 		
 		if (keycode == input.keys.TRIGGER)
 		{
-			tia.ram[tia.reg.INPT4] = 0;
+			tia.INPT4 = 0;
 			tia.ram_changed = true;
 		}
 		else if (keycode == input.keys.LEFT)
@@ -80,7 +80,7 @@ input =
 			
 		if (keycode == input.keys.TRIGGER)
 		{
-			tia.ram[tia.reg.INPT4] = 128;
+			tia.INPT4 = 128;
 			tia.ram_changed = true;
 		}
 		else if (keycode == input.keys.LEFT)
