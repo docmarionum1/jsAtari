@@ -3,16 +3,22 @@ jsAtari
 
 An Atari 2600 emulator written in javascript. 
 
+Play it online at: http://jsatari.com/  Bring your own ROMS.
+
+If you're having trouble finding ROMs that will work, I recommend trying Defender: http://www.atariage.com/2600/roms/Defender.zip
+
+I also recommend using Google Chrome, or maybe one of the Firefox Nightly builds.
+
 
 Status
 --------------------
 
+* ROM Compatibility is very poor.  Only ROMS that are 4k is size will work.  And I haven't tested many.
 * The CPU is fully implemented (barring some illegal operators) and largely tested.  
-* The TIA is largely implemented
-	*Graphics are done (Playing Field, Players, Missiles, Ball)
-	*Input isn't implemented
-	*Collision isn't implemented
-* The PIA (Timers, input) hasn't been started
+* The TIA is fully implemented, including some of the unexpected functionality (i.e. drawing sprites many times per frame).
+* The PIA Is partially implemented
+	* Timers are fully implemented
+	* Basic controls are implemented, but not all of the switches on the console are. 
 * The emulator is not very efficient yet, running 10-20 FPS, depending on browser.  The Atari 2600 runs at 60 FPS.  Most of the time is spent on the TIA because the screen must be drawn pixel-by-pixel.  Not yet sure how I'm going to be able to drastically improve performance.  
 
 
@@ -32,9 +38,13 @@ Then put the following commands in a script:
 	var debugging = false; //Or true, to run with debugging.
 	var autorun = true; //Or false, to step through each cycle manually
 	
-	mmu.__init__("rom.bin", debugging);
+	pia.__init__(debugging);
+	mmu.__init__(debugging);
 	tia.__init__(document.getElementById("tv"), debugging);
-	cpu.start(autorun, debugging);
+	input.__init__(document);
+	
+	mmu.loadRom("rom.bin");			
+	cpu.start(autorun, debugging); //Autorun, debugging mode
    
    
 If running with debugging, autorun should probably be switched off.  Debugging includes log writes and a slower drawing method.  Firefox will probably freeze if debugging and autorun are both on.
